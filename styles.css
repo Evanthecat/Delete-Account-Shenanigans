@@ -51,3 +51,16 @@ body {
 .popup-button:active {
     background-color: #b8d8e0;
 }
+
+.close-button {
+    margin: 2px;
+    padding: 0;
+    background-image: url('X_Icon.png');
+    width: 10px;
+    height: 10px;
+    background-size: cover;
+    border: none;
+    position: absolute;
+    right: 0;
+    top: 0;
+}

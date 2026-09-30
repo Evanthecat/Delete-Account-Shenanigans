@@ -1,3 +1,11 @@
+popupData = [
+    {
+        "width": "10px",
+        "height": "10px",
+        
+    }
+]
+
 function popup(width, height, text, buttonText) {
     const popupElement = document.createElement("div");
     popupElement.className = "popup";
@@ -13,10 +21,14 @@ function popup(width, height, text, buttonText) {
     button.style.width = width;
 
     closeButton = document.createElement("button");
-    closeButton.innerHTML = "<span class="icon">"
+    closeButton.className = "close-button";
+    closeButton.onclick = () => {
+        popupElement.remove();
+    }
 
     const container = document.getElementById("container");
     container.append(popupElement);
+    popupElement.append (closeButton);
     popupElement.append(message);
     popupElement.append(button)
 }
