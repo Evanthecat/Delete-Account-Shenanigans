@@ -30,6 +30,26 @@ body {
     background-color: #c50000;
 }
 
+@keyframes popIn {
+    from {
+        scale: 0;
+    }
+
+    to {
+        scale: 1;
+    }
+}
+
+@keyframes popOut {
+    from {
+        scale: 1;
+    }
+
+    to {
+        scale: 0;
+    }
+}
+
 .popup {
     background-color: white;
     position: absolute;
@@ -37,6 +57,9 @@ body {
     display: grid;
     justify-content: center;
     padding: 15px;
+
+    animation-name: popIn;
+    animation-duration: .5s;
 }
 
 .popup-button {
@@ -50,6 +73,11 @@ body {
 }
 .popup-button:active {
     background-color: #b8d8e0;
+}
+
+.deleting {
+    scale: 0;
+    transition: all 0.5s;
 }
 
 .close-button {
