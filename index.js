@@ -69,14 +69,27 @@ function popup(width, height, text, buttonText, index) {
     button.innerHTML = buttonText;
     button.style.width = width;
     button.onclick = () => {
-        popupIndex = index + 1;
-        popup(
-            popupData[popupIndex]["width"],
-            popupData[popupIndex]["height"],
-            popupData[popupIndex]["text"],
-            popupData[popupIndex]["buttonText"],
-            popupIndex
-        )
+        if (index == 0) { // Change back to 8 later
+            const popups = document.querySelectorAll(".popup");
+            popups.forEach(p => {
+                p.remove();
+            });
+
+            deleteButton = document.querySelector(".delete-button");
+            deleteButton.style.display = "none";
+
+            startShuffle(3, 1, container);
+        }
+        else {
+            popupIndex = index + 1;
+            popup(
+                popupData[popupIndex]["width"],
+                popupData[popupIndex]["height"],
+                popupData[popupIndex]["text"],
+                popupData[popupIndex]["buttonText"],
+                popupIndex
+            )
+        }
     }
 
     closeButton = document.createElement("button");
@@ -94,4 +107,73 @@ function popup(width, height, text, buttonText, index) {
     popupElement.append (closeButton);
     popupElement.append(message);
     popupElement.append(button)
+}
+
+shuffleData = [
+    {
+        "columns": 3,
+        "rows": 1,
+        "winText": "",
+        "loseText": ""
+    }
+]
+
+function startShuffle(columns, rows, container, index) {
+    for (row = 0; row < columns; row++) {
+        for (column = 0; column < rows; column++) {
+            let cup = document.createElement('img');
+            cup.src = "CupDemoSprite.png"
+            cup.className = "cup";
+
+            const margin = 10;
+
+            cup.style.width = String(100 / columns - 2 * margin) + "vw";
+            cup.style.left = String(100 / columns * row + margin) + "vw";
+            cup.style.top = String(100 / columns * column + margin) + "vw";
+
+            container.append(cup);
+        }
+    }
+
+    const cups = document.querySelectorAll(".cup");
+    const correctCup = cups[Math.floor(Math.random() * cups.length)];
+
+    setTimeout(() => {
+        correctCup.classList.add("correct-cup");
+    }, 1000);
+
+    for (i = 1; i <= 5; i++) {
+        setTimeout(() => {
+            let index1;
+            let index2;
+
+            while (true) {
+                index1 = Math.floor(Math.random() * cups.length)
+                index2 = Math.floor(Math.random() * cups.length)
+
+                if (index1 != index2) {
+                    break;
+                }
+            }
+
+            position1x = cups[index1].style.left;
+            position2x = cups[index2].style.left;
+            position1y = cups[index1].style.top;
+            position2y = cups[index2].style.top;
+
+            cups[index1].style.left = position2x;
+            cups[index2].style.left = position1x;
+            cups[index1].style.top = position2y;
+            cups[index2].style.top = position1y;
+        }, 1000 + i * 500);
+    }
+
+    cups.forEach(cup => {
+        cup.onclick = () => {
+            console.log("wrong!");
+        }
+    });
+    correctCup.onclick = () => {
+        console.log("correct!");
+    }
 }

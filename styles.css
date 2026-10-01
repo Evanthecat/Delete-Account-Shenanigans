@@ -92,3 +92,45 @@ body {
     right: 0;
     top: 0;
 }
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes highlightCup {
+    0% {
+        opacity: 100%;
+    }
+
+    50% {
+        opacity: 50%;
+    }
+
+    100% {
+        opacity: 100%;
+    }
+}
+
+.cup {
+    position: absolute;
+
+    animation-name: fadeIn;
+    animation-duration: .5s;
+
+    transition: left .5s, right .5s;
+}
+.cup:hover {
+    cursor: grab;
+    transform: scale(1.1);
+}
+
+.correct-cup {
+    animation-name: highlightCup;
+    animation-duration: 1s;
+}
