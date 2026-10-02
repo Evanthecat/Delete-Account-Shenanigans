@@ -102,7 +102,7 @@ function closePopup() {
 
 function popup(width, height, text, buttonText, index) {
     let onClick = () => {
-        if (index == 0) { // Change back to 8 later
+        if (index == 8) {
             deleteButton = document.querySelector(".delete-button");
             deleteButton.style.display = "none";
 
