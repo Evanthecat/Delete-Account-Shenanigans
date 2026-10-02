@@ -1,3 +1,5 @@
+finalStage(document.getElementById("container"));
+
 popupData = [
     {
         "width": "200px",
@@ -55,7 +57,7 @@ popupData = [
     }
 ]
 
-function popup(width, height, text, buttonText, index) {
+function createPopup(width, height, text, buttonText, onClick) {
     const popupElement = document.createElement("div");
     popupElement.className = "popup";
     popupElement.style.width = width;
@@ -68,29 +70,8 @@ function popup(width, height, text, buttonText, index) {
     button.className = "popup-button";
     button.innerHTML = buttonText;
     button.style.width = width;
-    button.onclick = () => {
-        if (index == 0) { // Change back to 8 later
-            const popups = document.querySelectorAll(".popup");
-            popups.forEach(p => {
-                p.remove();
-            });
 
-            deleteButton = document.querySelector(".delete-button");
-            deleteButton.style.display = "none";
-
-            startShuffle(3, 1, container);
-        }
-        else {
-            popupIndex = index + 1;
-            popup(
-                popupData[popupIndex]["width"],
-                popupData[popupIndex]["height"],
-                popupData[popupIndex]["text"],
-                popupData[popupIndex]["buttonText"],
-                popupIndex
-            )
-        }
-    }
+    button.onclick = onClick;
 
     closeButton = document.createElement("button");
     closeButton.className = "close-button";
@@ -109,18 +90,125 @@ function popup(width, height, text, buttonText, index) {
     popupElement.append(button)
 }
 
+function closePopup() {
+    let popup = document.querySelector(".popup");
+        
+    popup.classList.add("deleting");
+    
+    popup.addEventListener('transitionend', function() {
+        popup.remove();
+    });
+}
+
+function popup(width, height, text, buttonText, index) {
+    let onClick = () => {
+        if (index == 0) { // Change back to 8 later
+            deleteButton = document.querySelector(".delete-button");
+            deleteButton.style.display = "none";
+
+            startShuffle(3, 1, container, 0);
+        }
+        else {
+            popupIndex = index + 1;
+            popup(
+                popupData[popupIndex]["width"],
+                popupData[popupIndex]["height"],
+                popupData[popupIndex]["text"],
+                popupData[popupIndex]["buttonText"],
+                popupIndex
+            )
+        }
+
+        closePopup();
+    }
+
+    createPopup(width, height, text, buttonText, onClick);
+}
+
 shuffleData = [
     {
         "columns": 3,
         "rows": 1,
-        "winText": "",
-        "loseText": ""
+        "width": "200px",
+        "height": "100px",
+        "winText": "Seems like that was too easy for you! Let me try something harder...",
+        "loseText": "Ha! This game is working much better!",
+        "buttonWinText": "Next",
+        "buttonLoseText": "Try again",
+        "shuffles": 10,
+        "shuffleSpeed": 400
+    },
+    {
+        "columns": 3,
+        "rows": 2,
+        "width": "200px",
+        "height": "100px",
+        "winText": "Still not enough? How about 3x3?",
+        "loseText": "You beat me last round, I beat you this round. Let's call it a tie so far.",
+        "buttonWinText": "Next",
+        "buttonLoseText": "Try again",
+        "shuffles": 50,
+        "shuffleSpeed": 200
+    },
+    {
+        "columns": 3,
+        "rows": 3,
+        "width": "200px",
+        "height": "100px",
+        "winText": "Seriously? How are you still here? Alright, next round.",
+        "loseText": "Yes! I won! You're way too good at this, you know.",
+        "buttonWinText": "Next",
+        "buttonLoseText": "Try again",
+        "shuffles": 100,
+        "shuffleSpeed": 200
+    },
+    {
+        "columns": 4,
+        "rows": 4,
+        "width": "200px",
+        "height": "100px",
+        "winText": "I have no words. I guess I'll have to step it up for the final round.",
+        "loseText": "How has it taken you this long to lose? I can barely process information that fast!",
+        "buttonWinText": "Next",
+        "buttonLoseText": "Try again",
+        "shuffles": 100,
+        "shuffleSpeed": 150
     }
 ]
 
+function spawnBullet(container) {
+    setTimeout(() => {
+        let bullet = document.createElement('img');
+
+        let randomNumber = Math.random();
+        bullet.style.left = String(90 * randomNumber) + "vw";
+        
+        bullet.className = "bullet";
+        bullet.src = "X_Icon.png";
+
+        container.append(bullet);
+
+        bullet.addEventListener('animationend', function() {
+            bullet.remove();
+        });
+
+        spawnBullet(container);
+    }, 200);
+}
+
+function finalStage(container) {
+    spawnBullet(container);
+}
+
 function startShuffle(columns, rows, container, index) {
-    for (row = 0; row < columns; row++) {
-        for (column = 0; column < rows; column++) {
+    const oldCups = document.querySelectorAll(".cup");
+
+    oldCups.forEach(cup => {
+        cup.remove();
+    });
+
+    for (let row = 0; row < columns; row++) {
+        for (let column = 0; column < rows; column++) {
             let cup = document.createElement('img');
             cup.src = "CupDemoSprite.png"
             cup.className = "cup";
@@ -130,6 +218,7 @@ function startShuffle(columns, rows, container, index) {
             cup.style.width = String(100 / columns - 2 * margin) + "vw";
             cup.style.left = String(100 / columns * row + margin) + "vw";
             cup.style.top = String(100 / columns * column + margin) + "vw";
+            cup.style.transition = "transition: left " + shuffleData[index]["shuffleSpeed"] + " top " + shuffleData[index]["shuffleSpeed"]
 
             container.append(cup);
         }
@@ -142,7 +231,7 @@ function startShuffle(columns, rows, container, index) {
         correctCup.classList.add("correct-cup");
     }, 1000);
 
-    for (i = 1; i <= 5; i++) {
+    for (i = 1; i <= shuffleData[index]["shuffles"]; i++) {
         setTimeout(() => {
             let index1;
             let index2;
@@ -165,15 +254,65 @@ function startShuffle(columns, rows, container, index) {
             cups[index2].style.left = position1x;
             cups[index1].style.top = position2y;
             cups[index2].style.top = position1y;
-        }, 1000 + i * 500);
+        }, 1500 + i * shuffleData[index]["shuffleSpeed"]);
     }
 
     cups.forEach(cup => {
         cup.onclick = () => {
-            console.log("wrong!");
+            const onClick = () => {
+                startShuffle(
+                    shuffleData[index]["columns"], 
+                    shuffleData[index]["rows"], 
+                    container, 
+                    index
+                );
+
+                closePopup();
+            }
+
+            createPopup(
+                shuffleData[index]["width"],
+                shuffleData[index]["height"],
+                shuffleData[index]["loseText"],
+                shuffleData[index]["buttonLoseText"],
+                onClick
+            )
         }
     });
     correctCup.onclick = () => {
-        console.log("correct!");
+        let onClick;
+        if (index < 3) {
+            onClick = () => {
+                startShuffle(
+                    shuffleData[index + 1]["columns"], 
+                    shuffleData[index + 1]["rows"], 
+                    container, 
+                    index + 1
+                );
+
+                closePopup();
+            }
+        }
+        else {
+            onClick = () => {
+                closePopup();
+
+                const oldCups = document.querySelectorAll(".cup");
+
+                oldCups.forEach(cup => {
+                    cup.remove();
+                });
+
+                finalStage();
+            }
+        }
+
+        createPopup(
+            shuffleData[index]["width"],
+            shuffleData[index]["height"],
+            shuffleData[index]["winText"],
+            shuffleData[index]["buttonWinText"],
+            onClick
+        )
     }
 }

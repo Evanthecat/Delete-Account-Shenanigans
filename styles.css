@@ -123,7 +123,7 @@ body {
     animation-name: fadeIn;
     animation-duration: .5s;
 
-    transition: left .5s, right .5s;
+    transition: left .5s, top .5s;
 }
 .cup:hover {
     cursor: grab;
@@ -133,4 +133,21 @@ body {
 .correct-cup {
     animation-name: highlightCup;
     animation-duration: 1s;
+}
+
+@keyframes bullet {
+    from {
+        top: 0;
+    }
+
+    to {
+        top: 90vh;
+    }
+}
+
+.bullet {
+    animation-name: bullet;
+    animation-duration: 1.5s;
+
+    position: absolute;
 }
