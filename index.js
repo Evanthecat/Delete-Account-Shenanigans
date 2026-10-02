@@ -1,5 +1,3 @@
-finalStage(document.getElementById("container"));
-
 popupData = [
     {
         "width": "200px",
@@ -92,12 +90,14 @@ function createPopup(width, height, text, buttonText, onClick) {
 
 function closePopup() {
     let popup = document.querySelector(".popup");
-        
-    popup.classList.add("deleting");
+
+    if (popup) {
+        popup.classList.add("deleting");
     
-    popup.addEventListener('transitionend', function() {
-        popup.remove();
-    });
+        popup.addEventListener('transitionend', function() {
+            popup.remove();
+        });
+    }
 }
 
 function popup(width, height, text, buttonText, index) {
@@ -159,45 +159,119 @@ shuffleData = [
         "loseText": "Yes! I won! You're way too good at this, you know.",
         "buttonWinText": "Next",
         "buttonLoseText": "Try again",
-        "shuffles": 100,
+        "shuffles": 50,
         "shuffleSpeed": 200
     },
     {
         "columns": 4,
         "rows": 4,
         "width": "200px",
-        "height": "100px",
-        "winText": "I have no words. I guess I'll have to step it up for the final round.",
+        "height": "150px",
+        "winText": "I have no words. I guess I'll have to step it up for the final round. I'm thinking something other than cups this time.",
         "loseText": "How has it taken you this long to lose? I can barely process information that fast!",
         "buttonWinText": "Next",
         "buttonLoseText": "Try again",
-        "shuffles": 100,
+        "shuffles": 50,
         "shuffleSpeed": 150
     }
 ]
 
+let bulletsOn = true;
+
+function win(container) {
+    bulletsOn = false;
+
+    let bullets = document.querySelectorAll(".bullet");
+    bullets.forEach(bullet => {
+        bullet.remove()
+    });
+
+    let cups = document.querySelectorAll(".cup");
+    cups.forEach(cup => {
+        cup.remove();
+    });
+
+    let deleteButton = document.querySelector(".delete-button");
+    deleteButton.remove();
+
+    h1 = document.createElement("h1");
+    h1.innerHTML = "Successfully Deleted Account!";
+
+    container.append(h1);
+
+    closePopup();
+}
+
+function lose(container) {
+    bulletsOn = false;
+
+    let bullets = document.querySelectorAll(".bullet");
+    bullets.forEach(bullet => {
+        bullet.remove()
+    });
+
+    let cups = document.querySelectorAll(".cup");
+    cups.forEach(cup => {
+        cup.remove();
+    });
+
+    let deleteButton = document.querySelector(".delete-button");
+    deleteButton.remove();
+
+    h1 = document.createElement("h1");
+    h1.innerHTML = "You Lost! Refresh the page to try again.";
+
+    closePopup();
+
+    container.append(h1);
+}
+
 function spawnBullet(container) {
-    setTimeout(() => {
-        let bullet = document.createElement('img');
+    if (bulletsOn) {
+        setTimeout(() => {
+            let bullet = document.createElement('img');
 
-        let randomNumber = Math.random();
-        bullet.style.left = String(90 * randomNumber) + "vw";
-        
-        bullet.className = "bullet";
-        bullet.src = "X_Icon.png";
+            let randomNumber = Math.random();
+            bullet.style.left = String(90 * randomNumber) + "vw";
+            
+            bullet.className = "bullet";
+            bullet.src = "X_Icon.png";
 
-        container.append(bullet);
+            container.append(bullet);
 
-        bullet.addEventListener('animationend', function() {
-            bullet.remove();
-        });
+            bullet.addEventListener('animationend', function() {
+                bullet.remove();
+            });
 
-        spawnBullet(container);
-    }, 200);
+            spawnBullet(container);
+
+            bullet.addEventListener('mouseover', function() {
+                lose(container);
+            });
+        }, 50);
+    }
 }
 
 function finalStage(container) {
-    spawnBullet(container);
+    let deleteButton = document.querySelector(".delete-button");
+    deleteButton.remove();
+
+    setTimeout(() => {
+        spawnBullet(container);
+
+        deleteButton = document.createElement("button");
+        deleteButton.innerHTML = "Delete Account";
+        deleteButton.className = "delete-button";
+
+        let onClick = () => {
+            win(container);
+        }
+
+        deleteButton.onclick = () => {
+            createPopup("200px", "100px", "Delete your Account?", "Yes", onClick)
+        }
+        container.append(deleteButton)
+    }, 1000);
 }
 
 function startShuffle(columns, rows, container, index) {
@@ -215,9 +289,9 @@ function startShuffle(columns, rows, container, index) {
 
             const margin = 10;
 
-            cup.style.width = String(100 / columns - 2 * margin) + "vw";
-            cup.style.left = String(100 / columns * row + margin) + "vw";
-            cup.style.top = String(100 / columns * column + margin) + "vw";
+            cup.style.width = "min(" + String(100 / columns - 2 * margin) + "vw, " + String(100 / columns - 2 * margin) + "vh" + ")";
+            cup.style.left = "min(" + String(100 / columns * row + margin) + "vw, " + String(100 / columns * row + margin) + "vh" + ")";
+            cup.style.top = "min(" + String(100 / columns * column + margin) + "vw, " + String(100 / columns * column + margin) + "vh" + ")";
             cup.style.transition = "transition: left " + shuffleData[index]["shuffleSpeed"] + " top " + shuffleData[index]["shuffleSpeed"]
 
             container.append(cup);
@@ -259,24 +333,25 @@ function startShuffle(columns, rows, container, index) {
 
     cups.forEach(cup => {
         cup.onclick = () => {
-            const onClick = () => {
-                startShuffle(
-                    shuffleData[index]["columns"], 
-                    shuffleData[index]["rows"], 
-                    container, 
-                    index
-                );
+            // const onClick = () => {
+            //     startShuffle(
+            //         shuffleData[index]["columns"], 
+            //         shuffleData[index]["rows"], 
+            //         container, 
+            //         index
+            //     );
 
-                closePopup();
-            }
+            //     closePopup();
+            // }
 
-            createPopup(
-                shuffleData[index]["width"],
-                shuffleData[index]["height"],
-                shuffleData[index]["loseText"],
-                shuffleData[index]["buttonLoseText"],
-                onClick
-            )
+            // createPopup(
+            //     shuffleData[index]["width"],
+            //     shuffleData[index]["height"],
+            //     shuffleData[index]["loseText"],
+            //     shuffleData[index]["buttonLoseText"],
+            //     onClick
+            // )
+            lose(container);
         }
     });
     correctCup.onclick = () => {
@@ -303,7 +378,7 @@ function startShuffle(columns, rows, container, index) {
                     cup.remove();
                 });
 
-                finalStage();
+                finalStage(container);
             }
         }
 
