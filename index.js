@@ -275,12 +275,6 @@ function finalStage(container) {
 }
 
 function startShuffle(columns, rows, container, index) {
-    const oldCups = document.querySelectorAll(".cup");
-
-    oldCups.forEach(cup => {
-        cup.remove();
-    });
-
     for (let row = 0; row < columns; row++) {
         for (let column = 0; column < rows; column++) {
             let cup = document.createElement('img');
@@ -355,6 +349,12 @@ function startShuffle(columns, rows, container, index) {
         }
     });
     correctCup.onclick = () => {
+        const oldCups = document.querySelectorAll(".cup");
+
+        oldCups.forEach(cup => {
+            cup.remove();
+        });
+        
         let onClick;
         if (index < 3) {
             onClick = () => {
